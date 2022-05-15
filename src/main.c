@@ -1,3 +1,4 @@
+#include "complimentary_filter.h"
 #include "pid.h"
 #include "rc_filter.h"
 #include "stdio.h"
@@ -101,8 +102,34 @@ void PID_Test(void) {
   }
 }
 
+void CF_Test() {
+  DTYPE alpha = 0.5, beta = 0.5;
+  DTYPE wx = 0.1, wy = 0, wz = 0, gbx = 0.01, gby = 0, gbz = 0;
+  Qtn Ori = {.w = 1, .x = 0, .y = 0, .z = 0};
+  // Init
+  DTYPE t = 0, dt = 0.01;
+  cf_init(t, alpha, beta);
+  while (t <= 1) {
+    t += dt;
+    Qtn q_w = {.w = 0, .x = wx, .y = wy, .z = wz};
+    scal(&q_w, -0.5 * dt, &q_w);
+    add(&Ori, &q_w, &Ori);
+    normalize_inplace(&Ori);
+    cf_update(t, &Ori, wx + gbx, wy + gby, wz + gbz);
+    // cf_update(t, &Ori, wx, wy, wz);
+    DTYPE qw, qx, qy, qz, bx, by, bz;
+    cf_get_filtered_qtn(&qw, &qx, &qy, &qz);
+    cf_get_bias(&bx, &by, &bz);
+    printf("[Qtn] gt: %lf, %lf, %lf, %lf, filtered: %lf, %lf, %lf, %lf\r\n",
+           Ori.w, Ori.x, Ori.y, Ori.z, qw, qx, qy, qz);
+    printf("[Bias] gt: %lf, %lf, %lf, filtered: %lf, %lf, %lf\r\n", gbx, gby,
+           gbz, bx, by, bz);
+  }
+}
+
 int main() {
   // RC_Test();
-  PID_Test();
+  // PID_Test();
+  CF_Test();
   return 0;
 }
