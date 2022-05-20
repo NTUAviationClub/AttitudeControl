@@ -17,6 +17,8 @@ extern "C" {
 #define CAC_PID_MEMORY_SIZE 2
 #define CAC_LPF_CUTOFF 3.0f
 
+void cac_init(void);
+
 void cac_set_rpy_setpoint(DTYPE roll, DTYPE pitch, DTYPE yaw);
 
 void cac_set_qtn_measured(Qtn *qm);
@@ -32,6 +34,8 @@ void cac_update_attitude_control(DTYPE now);
 void cac_update_rate_control(DTYPE now);
 
 void cac_get_command(DTYPE *cx, DTYPE *cy, DTYPE *cz);
+
+void cac_get_angular_rate_setpoint(DTYPE *rs, DTYPE *ps, DTYPE *ys);
 
 #ifdef __cplusplus
 }

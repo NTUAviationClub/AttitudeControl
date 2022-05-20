@@ -4,6 +4,44 @@ DTYPE last_p_ = 0, last_i_ = 0, last_d_ = 0;
 
 DTYPE Dabs(DTYPE r) { return (r > 0 ? r : (-r)); }
 
+void pid_init_malloc(FT *ctl, FT *lpf, DTYPE coff, DTYPE kp, DTYPE ki, DTYPE kd,
+                     DTYPE ilimit) {
+  // set up lpf
+  lpf->size = RC_MEMORY_SIZE;
+  lpf->last_pos = 0;
+  lpf->last_time = 0.0f;
+  lpf->current_input = 0;
+  lpf->current_output = 0;
+  lpf->last_input = (DTYPE *)malloc(sizeof(DTYPE) * lpf->size);
+  lpf->last_output = (DTYPE *)malloc(sizeof(DTYPE) * lpf->size);
+  lpf->param = (DTYPE *)malloc(sizeof(DTYPE) * RC_PARAM_SIZE);
+  lpf->param[RC_CUTOFF] = coff;
+  // initialize
+  for (int i = 0; i < lpf->size; i++) {
+    lpf->last_input[i] = 0;
+    lpf->last_output[i] = 0;
+  }
+  // set up pid
+  ctl->size = RC_MEMORY_SIZE;
+  ctl->last_pos = 0;
+  ctl->last_time = 0.0f;
+  ctl->current_input = 0;
+  ctl->current_output = 0;
+  ctl->last_input = (DTYPE *)malloc(sizeof(DTYPE) * ctl->size);
+  ctl->last_output = (DTYPE *)malloc(sizeof(DTYPE) * ctl->size);
+  ctl->param = (DTYPE *)malloc(sizeof(DTYPE) * PID_PARAM_SIZE);
+  ctl->param[PID_KP] = kp;
+  ctl->param[PID_KI] = ki;
+  ctl->param[PID_KD] = kd;
+  ctl->param[PID_Ilimit] = ilimit;
+  ctl->param[PID_SIdt] = 0.0f;
+  // initialize
+  for (int i = 0; i < ctl->size; i++) {
+    ctl->last_input[i] = 0;
+    ctl->last_output[i] = 0;
+  }
+}
+
 void pid_update(DTYPE now, DTYPE setpoint, FT *ctl, int isqueue, FT *dlpf) {
   DTYPE _p = 0, _i = 0, _d = 0, _e = 0, _dot = 0;
   DTYPE dt = now - ctl->last_time;
