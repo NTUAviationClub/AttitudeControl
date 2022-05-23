@@ -64,21 +64,21 @@ void cf_update_ui(DTYPE _now, FT *_cf, Qtn *_q_acc, DTYPE _wx, DTYPE _wy,
                  .y = _cf->last_output[CF_QY_],
                  .z = _cf->last_output[CF_QZ_]};
   Qtn q_gyr_bb, q_gyr, q_new, q_b, q_b_fix, q_last_i;
-  scal(&w_qt, -0.5 * dt, &w_qt);
-  mul(&w_qt, &last_qt, &q_gyr_bb);
+  scal(&w_qt, 0.5 * dt, &w_qt);
+  mul(&last_qt, &w_qt, &q_gyr_bb);
   add(&q_gyr_bb, &last_qt, &q_gyr_bb);
   // q_gyr = q_gyr_bb - (-0.5)*b*dt (*) q_k-1
-  scal(&b_qt, -0.5 * dt, &b_qt);
-  mul(&b_qt, &last_qt, &q_b);
+  scal(&b_qt, 0.5 * dt, &b_qt);
+  mul(&last_qt, &b_qt, &q_b);
   sub(&q_gyr_bb, &q_b, &q_gyr);
   // q_k = slerp(q_acc, q_gyr)
   DTYPE alpha = _cf->param[CF_ALPHA_];
   slerp(_q_acc, &q_gyr, &q_new, alpha);
   // Update bias
   DTYPE beta = _cf->param[CF_BETA_];
-  sub(_q_acc, &q_gyr_bb, &q_b_fix);
+  sub(&q_gyr_bb, _q_acc, &q_b_fix);
   inv(&last_qt, &q_last_i);
-  mul(&q_b_fix, &q_last_i, &q_b_fix);
+  mul(&q_last_i, &q_b_fix, &q_b_fix);
   _cf->last_output[CF_BX_] =
       beta * _cf->last_output[CF_BX_] + 2 * (1 - beta) * q_b_fix.x / dt;
   _cf->last_output[CF_BY_] =

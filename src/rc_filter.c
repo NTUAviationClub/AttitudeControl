@@ -12,6 +12,24 @@ void set_coeff(DTYPE cutoff, DTYPE sp) {
   rc_b1_ = rc_b0_;
 }
 
+void rc_init_malloc(FT *lpf, DTYPE coff) {
+  // set up lpf
+  lpf->size = RC_MEMORY_SIZE;
+  lpf->last_pos = 0;
+  lpf->last_time = 0.0f;
+  lpf->current_input = 0;
+  lpf->current_output = 0;
+  lpf->last_input = (DTYPE *)malloc(sizeof(DTYPE) * lpf->size);
+  lpf->last_output = (DTYPE *)malloc(sizeof(DTYPE) * lpf->size);
+  lpf->param = (DTYPE *)malloc(sizeof(DTYPE) * RC_PARAM_SIZE);
+  lpf->param[RC_CUTOFF] = coff;
+  // initialize
+  for (int i = 0; i < lpf->size; i++) {
+    lpf->last_input[i] = 0;
+    lpf->last_output[i] = 0;
+  }
+}
+
 void rc_update(DTYPE now, FT *filter) {
   // update coefficients
   DTYPE _sp = now - filter->last_time;

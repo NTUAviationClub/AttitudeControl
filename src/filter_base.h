@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "stdlib.h"
+
 typedef float DTYPE;
 
 typedef struct Filter {
