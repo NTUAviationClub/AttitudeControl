@@ -13,7 +13,7 @@ extern "C" {
 
 #define RC_MEMORY_SIZE 1
 
-// void rc_init(DTYPE cutoff);
+void rc_init_malloc(FT *lpf, DTYPE coff);
 
 void rc_update(DTYPE now, FT *filter);
 

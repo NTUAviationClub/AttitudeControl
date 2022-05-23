@@ -182,14 +182,23 @@ void cac_update_attitude_control(DTYPE now) {
 
 void cac_update_rate_control(DTYPE now) {
   // roll rate control
+  rpid_.current_input = rrm_;
   pid_update(now, rs_, &rpid_, PID_NOT_QUEUE, &rlpf_);
   cx_ = rpid_.current_output;
   // pitch rate control
+  ppid_.current_input = prm_;
   pid_update(now, ps_, &ppid_, PID_NOT_QUEUE, &plpf_);
   cy_ = ppid_.current_output;
   // yaw rate control
+  ypid_.current_input = yrm_;
   pid_update(now, ys_, &ypid_, PID_NOT_QUEUE, &ylpf_);
   cz_ = ypid_.current_output;
+}
+
+void cac_get_angular_rate_setpoint(DTYPE *rs, DTYPE *ps, DTYPE *ys) {
+  *rs = rs_;
+  *ps = ps_;
+  *ys = ys_;
 }
 
 void cac_get_command(DTYPE *cx, DTYPE *cy, DTYPE *cz) {

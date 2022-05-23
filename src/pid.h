@@ -19,7 +19,12 @@ extern "C" {
 #define PID_USE_QUEUE 1
 #define PID_NOT_QUEUE 2
 
+void pid_init_malloc(FT *ctl, FT *lpf, DTYPE coff, DTYPE kp, DTYPE ki, DTYPE kd,
+                     DTYPE ilimit);
+
 void pid_update(DTYPE now, DTYPE setpoint, FT *ctl, int isqueue, FT *dlpf);
+
+void get_last_pid(DTYPE *p, DTYPE *i, DTYPE *d);
 
 #ifdef __cplusplus
 }
